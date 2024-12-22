@@ -9,6 +9,7 @@ import {
   HiOutlineShoppingCart,
 } from "react-icons/hi";
 import avatarImg from "../assets/avatar.png";
+import { useSelector } from "react-redux";
 
 const navigation = [
   {
@@ -30,8 +31,11 @@ const navigation = [
 ];
 
 const Navbar = () => {
-  const currentUser = true;
+  const currentUser = false;
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+
+  const cartItems = useSelector((store) => store.cart.cartItems);
+
   // max-w-screen-2xl equivalent to max-width: 1536px in css
   return (
     <header className="max-w-screen-2xl mx-auto px-4 py-6">
@@ -100,7 +104,13 @@ const Navbar = () => {
             className="bg-primary p-1 sm:px-6 px-2 flex items-center rounded-md"
           >
             <HiOutlineShoppingCart className="" />
-            <span className="text-sm font-semibold sm:ml-1">0</span>
+            {cartItems.length > 0 ? (
+              <span className="text-sm font-semibold sm:ml-1">
+                {cartItems.length}
+              </span>
+            ) : (
+              <span className="text-sm font-semibold sm:ml-1">0</span>
+            )}
           </Link>
         </div>
       </nav>
