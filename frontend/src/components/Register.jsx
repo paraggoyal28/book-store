@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Link } from "react-router";
 import { FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const [message, setMessage] = useState("");
+  const { registerUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -12,9 +14,17 @@ const Register = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
-
-  const handleGoogleSignIn = () => {};
+  // register a user
+  const onSubmit = async (data) => {
+    try {
+      console.log(data);
+      await registerUser(data.email, data.password);
+      alert("User registration successful");
+    } catch (error) {
+      console.log(error);
+      setMessage("Please provide valid email and password");
+    }
+  };
 
   return (
     <div className="h-[calc(100vh-120px)] flex justify-center items-center">
@@ -68,18 +78,6 @@ const Register = () => {
             Login
           </Link>
         </p>
-
-        {/* google sign in */}
-        <div className="mt-4">
-          <button
-            onClick={handleGoogleSignIn}
-            className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary
-       hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
-          >
-            <FaGoogle className="mr-2" />
-            Sign up with Google
-          </button>
-        </div>
 
         <p className="mt-5 text-center text-gray-500 text-xs">
           &copy; 2025 Book Store. All rights reserved.

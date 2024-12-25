@@ -1,4 +1,3 @@
-import React from "react";
 import { news } from "../../assets/news";
 import { Swiper, SwiperSlide } from "swiper/react";
 

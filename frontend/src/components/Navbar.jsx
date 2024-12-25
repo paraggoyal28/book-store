@@ -10,6 +10,7 @@ import {
 } from "react-icons/hi";
 import avatarImg from "../assets/avatar.png";
 import { useSelector } from "react-redux";
+import { useAuth } from "../context/AuthContext";
 
 const navigation = [
   {
@@ -31,10 +32,14 @@ const navigation = [
 ];
 
 const Navbar = () => {
-  const currentUser = false;
+  const { currentUser, logout } = useAuth();
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
   const cartItems = useSelector((store) => store.cart.cartItems);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   // max-w-screen-2xl equivalent to max-width: 1536px in css
   return (
@@ -85,6 +90,14 @@ const Navbar = () => {
                           </Link>
                         </li>
                       ))}
+                      <li>
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        >
+                          Logout
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 )}
