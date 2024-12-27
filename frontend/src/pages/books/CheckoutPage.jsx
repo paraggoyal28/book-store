@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../../context/AuthContext";
+import { useAddOrderMutation } from "../../redux/features/orders/ordersApi";
+import Swal from "sweetalert2";
 
 const CheckoutPage = () => {
   const cartItems = useSelector((store) => store.cart.cartItems);
   const totalPrice = cartItems
     .reduce((acc, cartItem) => acc + cartItem?.newPrice, 0)
     .toFixed(2);
-  const currentUser = true; // TODO: get user from auth
+  const { currentUser } = useAuth();
 
   const [isChecked, setIsChecked] = useState(false);
   const {
@@ -18,7 +21,11 @@ const CheckoutPage = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const navigate = useNavigate();
+  const [createOrder, { isLoading, error }] = useAddOrderMutation();
+
+  const onSubmit = async (data) => {
+    console.log(data);
     const newOrder = {
       name: data?.name,
       email: currentUser?.email,
@@ -33,7 +40,28 @@ const CheckoutPage = () => {
       totalPrice: totalPrice,
     };
     console.log(newOrder);
+
+    try {
+      await createOrder(newOrder).unwrap();
+      Swal.fire({
+        title: "Confirmed Order",
+        text: "Your order placed successfully!",
+        icon: "success",
+        showCancelButton: false,
+        confirmButtonColor: "#2DD816FF",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, It's okay!",
+      });
+      navigate("/orders");
+    } catch (error) {
+      console.error("Error placing an order", error);
+      alert("Failed to place an order");
+    }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <section>
@@ -45,7 +73,7 @@ const CheckoutPage = () => {
                 Cash On Delivery
               </h2>
               <p className="text-gray-500 mb-2">Total Price: ${totalPrice}</p>
-              <p className="text-gray-500 mb-6">Items:0</p>
+              <p className="text-gray-500 mb-6">Items: {cartItems.length}</p>
             </div>
 
             <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
@@ -61,8 +89,9 @@ const CheckoutPage = () => {
                 <div className="lg:col-span-2">
                   <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
                     <div className="md:col-span-5">
-                      <label htmlFor="full_name">Full Name</label>
+                      <label htmlFor="name">Full Name</label>
                       <input
+                        {...register("name", { required: true })}
                         type="text"
                         name="name"
                         id="name"
@@ -85,6 +114,7 @@ const CheckoutPage = () => {
                     <div className="md:col-span-5">
                       <label htmlFor="phone">Phone Number</label>
                       <input
+                        {...register("phone", { required: true })}
                         type="number"
                         name="phone"
                         id="phone"
@@ -110,6 +140,7 @@ const CheckoutPage = () => {
                         type="text"
                         name="city"
                         id="city"
+                        {...register("city", { required: true })}
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder=""
                       />
@@ -121,6 +152,7 @@ const CheckoutPage = () => {
                         <input
                           name="country"
                           id="country"
+                          {...register("country", { required: true })}
                           placeholder="Country"
                           className="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent"
                         />
@@ -166,6 +198,7 @@ const CheckoutPage = () => {
                         <input
                           name="state"
                           id="state"
+                          {...register("state", { required: true })}
                           placeholder="State"
                           className="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent"
                         />
@@ -207,6 +240,7 @@ const CheckoutPage = () => {
                       <input
                         type="text"
                         name="zipcode"
+                        {...register("zipcode", { required: true })}
                         id="zipcode"
                         className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                         placeholder=""
@@ -218,11 +252,12 @@ const CheckoutPage = () => {
                         <input
                           type="checkbox"
                           name="billing_same"
+                          onClick={() => setIsChecked(!isChecked)}
                           id="billing_same"
                           className="form-checkbox"
                         />
                         <label htmlFor="billing_same" className="ml-2 ">
-                          I am aggree to the{" "}
+                          I agree to the{" "}
                           <Link className="underline underline-offset-2 text-blue-600">
                             Terms & Conditions
                           </Link>{" "}
@@ -238,7 +273,7 @@ const CheckoutPage = () => {
                       <div className="inline-flex items-end">
                         <button
                           disabled={!isChecked}
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          className="bg-blue-500 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-4 rounded"
                         >
                           Place an Order
                         </button>
