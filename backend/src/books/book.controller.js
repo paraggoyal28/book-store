@@ -18,7 +18,6 @@ const getAllBooks = async (req, res) => {
     const books = await Book.find().sort({ createdAt: -1 });
     res.status(200).send(books);
   } catch (error) {
-    console.log("Error fetching book: ", error);
     res.status(500).send({ message: "Failed to fetch books" });
   }
 };
@@ -33,7 +32,6 @@ const getSingleBook = async (req, res) => {
     }
     res.status(200).send(book);
   } catch (error) {
-    console.log("Error fetching book: ", error);
     res.status(500).send({ message: "Failed to fetch book" });
   }
 };
@@ -54,7 +52,6 @@ const updateBook = async (req, res) => {
       book: updatedBook,
     });
   } catch (error) {
-    console.log("Error updating the book: ", error);
     res.status(500).send({ message: "Failed to update book" });
   }
 };
@@ -72,7 +69,6 @@ const deleteBook = async (req, res) => {
       book: deletedBook,
     });
   } catch (error) {
-    console.log("Error deleting a book: ", error);
     res.status(500).send({ message: "Failed to delete book" });
   }
 };

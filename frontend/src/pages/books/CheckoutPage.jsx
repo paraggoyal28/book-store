@@ -25,7 +25,6 @@ const CheckoutPage = () => {
   const [createOrder, { isLoading, error }] = useAddOrderMutation();
 
   const onSubmit = async (data) => {
-    console.log(data);
     const newOrder = {
       name: data?.name,
       email: currentUser?.email,
@@ -39,7 +38,6 @@ const CheckoutPage = () => {
       productIds: cartItems.map((item) => item?._id),
       totalPrice: totalPrice,
     };
-    console.log(newOrder);
 
     try {
       await createOrder(newOrder).unwrap();

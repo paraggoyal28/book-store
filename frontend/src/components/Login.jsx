@@ -33,7 +33,6 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       alert("Google sign in failed!");
-      console.log(error);
     }
   };
 
